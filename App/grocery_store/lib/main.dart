@@ -38,11 +38,12 @@ class _AppHomeState extends State<AppHome> {
   @override
   Widget build(BuildContext context) {
 
-
-    return Scaffold(
-      appBar: AppBarCustom(key: widget.appBarKey),
+    return Scaffold(   
+      // appBar: AppBarCustom(key: widget.appBarKey),
       bottomNavigationBar: BottomNav(index: widget.currentIndex, controller: widget._controller,callChild: widget.callChild, appBarKey:  widget.appBarKey,),
-      body: PageViewCustom(controller: widget._controller, appBarKey: widget.appBarKey),
+      body: Container(
+        // color: ThemeCustom.main_bgApp,
+        child: PageViewCustom(controller: widget._controller, appBarKey: widget.appBarKey)),
       floatingActionButton: FloatingActionButton(
         onPressed: (){},
         shape: CircleBorder(),

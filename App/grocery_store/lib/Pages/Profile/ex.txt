@@ -1,0 +1,47 @@
+ Scaffold(
+            backgroundColor: ThemeCustom.main_bgApp,   
+
+      body: Container(
+          height: MediaQuery.of(context).size.height, 
+        child: Stack(
+          
+          alignment: Alignment.topCenter,
+          children: [
+            Container(
+                height: 150,
+                color: ThemeCustom.main_backgAppBar,
+               
+              ),
+    
+            Positioned(       
+              top: 110,                              
+              child: Container(                
+                height: MediaQuery.of(context).size.height / 1.4, 
+                width: MediaQuery.of(context).size.width / 1.1,              
+                padding: EdgeInsets.only(top: 90, left: 10, right: 10),
+                margin: EdgeInsets.symmetric(horizontal: 30),
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  borderRadius: BorderRadius.all(Radius.circular(20))
+                ),
+                child: Body(),
+              )
+            ),
+            Positioned(  
+              top: 63,
+              child: Container(                
+                height: 90,
+                width: 90,
+                decoration: BoxDecoration(
+                  image:  DecorationImage(image: AssetImage("images/avt.jpg")),
+                  shape: BoxShape.circle,    
+                  border: Border.all(width: 3, color: ThemeCustom.main_backgAppBar_v2)
+                ),
+               
+              )
+            ),
+          
+          ],
+        ),
+      ),
+    );

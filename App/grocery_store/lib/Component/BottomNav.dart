@@ -41,7 +41,7 @@ class _BottomNavState extends State<BottomNav> {
     });
     if(value == 2)
     {
-      (widget.appBarKey.currentState as AppBarCustomState).updateTitle("Máy Tính");
+      // (widget.appBarKey.currentState as AppBarCustomState).updateTitle("Máy Tính");
     }
     widget.controller.jumpToPage(value);
   }

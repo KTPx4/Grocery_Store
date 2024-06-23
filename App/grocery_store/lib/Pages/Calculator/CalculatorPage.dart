@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:grocery_store/Component/AppBarCustom.dart';
 import 'package:grocery_store/Component/ThemeCustom.dart';
+import 'package:grocery_store/Pages/Calculator/History.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:expressions/expressions.dart';
 
@@ -40,6 +43,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   }
 
   void _saveHistory(String entry) async {
+    if(entry.split("=").length < 2) return;
     final prefs = await SharedPreferences.getInstance();
     history.add(entry);
     await prefs.setStringList('history', history);
@@ -196,171 +200,121 @@ class _CalculatorPageState extends State<CalculatorPage> {
     });
   }
   
-  void _showConfirmDialog() async {
-    bool? confirm = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Xác nhận'),
-          content: Text('Bạn có chắc chắn muốn xóa?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: Text('Xóa', style: TextStyle(color: Colors.red)),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: Text('Hủy'),
-            ),
-          ],
-        );
-      },
-    );
 
-    if (confirm == true) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList('history', []);
-      setState(() {
-        history = [];
-      });
-      Navigator.of(context).pop(true);
-    }
-  }
   
   void _showHistory() {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text('Lịch sử'),
-          content: Container(
-            width: double.maxFinite,
-            height: 200.0,
-            child: ListView.builder(
-              itemCount: history.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(history[index]),
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: _showConfirmDialog,
-              child: Text('Xóa', style: TextStyle(color: Colors.red),),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Đóng'),
-            ),
-          ],
-        );
+        return History(history: history, scrollToEnd: _scrollToEnd, clearAll: _clearAll, insertCharacter: _insertCharacter);
       },
     );
+  
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-          color: ThemeCustom.cal_bgListButton,
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 40),
-          child: Column(            
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [    
-               IconButton(           
-              icon: Icon(Icons.history, size: 35,),
-              onPressed: _showHistory,
-            ),        
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    TextField(                      
-                      scrollController: _scrollController,
-                      autofocus: true,
-                      keyboardType: TextInputType.none,
-                      controller: _controller,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        
+    return Scaffold(
+      
+      appBar: AppBar(
+        title: Text("Máy Tính", style: TextStyle(color: ThemeCustom.main_titleAppBar),),
+        backgroundColor: ThemeCustom.main_backgAppBar_v2,      
+      ),
+      body: Container(
+            // color: ThemeCustom.cal_bgListButton,
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 40),
+            child: Column(            
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [    
+                 IconButton(           
+                icon: Icon(Icons.history, size: 35,),
+                onPressed: _showHistory,
+              ),        
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TextField(                      
+                        scrollController: _scrollController,
+                        autofocus: true,
+                        keyboardType: TextInputType.none,
+                        controller: _controller,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          
+                        ),
+                        style: TextStyle(fontSize: 24.0),
+                        onChanged: (text) => _updateResult(),
                       ),
-                      style: TextStyle(fontSize: 24.0),
-                      onChanged: (text) => _updateResult(),
-                    ),
-                    Text(
-                      result,
-                      style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold),
-                    ),
+                      Text(
+                        result,
+                        style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+      
+                const SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    IconButton(onPressed: _moveCursorLeft, icon: Icon(Icons.arrow_back_ios_new)),
+                    IconButton(onPressed: _moveCursorRight, icon: Icon(Icons.arrow_forward_ios_sharp)),
+                    IconButton(onPressed: _deleteCharacter, icon: Icon(Icons.backspace)),
+                    IconButton(onPressed: _clearAll, icon: Icon(Icons.cleaning_services_rounded)),
                   ],
                 ),
-              ),
-
-              const SizedBox(height: 8.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(onPressed: _moveCursorLeft, icon: Icon(Icons.arrow_back_ios_new)),
-                  IconButton(onPressed: _moveCursorRight, icon: Icon(Icons.arrow_forward_ios_sharp)),
-                  IconButton(onPressed: _deleteCharacter, icon: Icon(Icons.backspace)),
-                  IconButton(onPressed: _clearAll, icon: Icon(Icons.cleaning_services_rounded)),
-                ],
-              ),
-              const SizedBox(height: 8.0),
-              _buildButton( ['7', '8', '9', '/'] ),
-              const SizedBox(height: 8.0),
-
-              _buildButton( ['4', '5', '6', 'x'] ),
-              const SizedBox(height: 8.0),
-
-              _buildButton( ['1', '2', '3', '-'] ),                     
-              const SizedBox(height: 8.0),
-
-              Row(                            
-                  children: ['0', '.', '=', '+']
-                      .map((char) { 
-                        if(char == "=")
-                        {
-                          bgColor = Colors.amber[800]!;
-                          textColor = Colors.white;
-                        }
-                        else if(char == "+")
-                        {
-                          bgColor = Colors.blue[700]!;
-                          textColor = Colors.white;
-                        }
-                        else 
-                        {
-                          bgColor = ThemeCustom.cal_bgButton;
-                          textColor = Colors.black;
-                        }                    
-                        return Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.all(4.0),
-                              child: ElevatedButton(       
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: bgColor,
-                                  fixedSize: Size(90, 60)   
-                                  ),             
-                                onPressed: char == '=' ? _evaluate : () => _insertCharacter(char),
-                                child: Text(char, style: TextStyle(fontSize: 24.0, color: textColor)),
-                              ),
-                            ),
-                          );
-                        }
-                      )
-                      .toList(),
-                ),            
-            ],
-          ),    
+                const SizedBox(height: 8.0),
+                _buildButton( ['7', '8', '9', '/'] ),
+                const SizedBox(height: 8.0),
       
+                _buildButton( ['4', '5', '6', 'x'] ),
+                const SizedBox(height: 8.0),
+      
+                _buildButton( ['1', '2', '3', '-'] ),                     
+                const SizedBox(height: 8.0),
+      
+                Row(                            
+                    children: ['0', '.', '=', '+']
+                        .map((char) { 
+                          if(char == "=")
+                          {
+                            bgColor = Colors.amber[800]!;
+                            textColor = Colors.white;
+                          }
+                          else if(char == "+")
+                          {
+                            // bgColor = Colors.blue[700]!;
+                            bgColor = Colors.blue[600]!;
+                            textColor = Colors.white;
+                          }
+                          else 
+                          {
+                            bgColor = ThemeCustom.cal_bgButton;
+                            textColor = Colors.black;
+                          }                    
+                          return Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.all(4.0),
+                                child: ElevatedButton(       
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: bgColor,
+                                    fixedSize: Size(90, 60)   
+                                    ),             
+                                  onPressed: char == '=' ? _evaluate : () => _insertCharacter(char),
+                                  child: Text(char, style: TextStyle(fontSize: 24.0, color: textColor)),
+                                ),
+                              ),
+                            );
+                          }
+                        )
+                        .toList(),
+                  ),            
+              ],
+            ),    
+        
+      ),
     );
   }
 
@@ -372,7 +326,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
                   {                 
                     if(double.tryParse(char) == null && char != ".")
                     {
-                      bgColor = Colors.blue[700]!;
+                      bgColor = Colors.blue[600]!;
                       textColor = Colors.white;
                     }
                     else 
