@@ -22,28 +22,28 @@ class _PageViewCustomState extends State<PageViewCustom> {
     switch(index)
     {
       case 1: 
-        (widget.appBarKey.currentState as AppBarCustomState).updateTitle("Kho");
+        // (widget.appBarKey.currentState as AppBarCustomState).updateTitle("Kho");
         return WareHousePage();
       case 2: 
        
-        (widget.appBarKey.currentState as AppBarCustomState).updateTitle("Máy Tính");
+        // (widget.appBarKey.currentState as AppBarCustomState).updateTitle("Máy Tính");
         return CalculatorPage();
       case 3:
-        (widget.appBarKey.currentState as AppBarCustomState).updateTitle("Cộng Đồng");
+        // (widget.appBarKey.currentState as AppBarCustomState).updateTitle("Cộng Đồng");
         return ForumPage();
       case 4:
-        (widget.appBarKey.currentState as AppBarCustomState).updateTitle("Tài Khoản");
+        // (widget.appBarKey.currentState as AppBarCustomState).updateTitle("Tài Khoản");
         return ProfilePage();
 
       default:
-        (widget.appBarKey.currentState as AppBarCustomState).updateTitle("Bán Hàng");
+        // (widget.appBarKey.currentState as AppBarCustomState).updateTitle("Bán Hàng");
         return HomePage();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return PageView.builder(
+    return PageView.builder(    
       physics: NeverScrollableScrollPhysics(),
       controller: widget.controller,
       itemCount: 5,
