@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class History extends StatefulWidget {
-  List<String> history;
+
   Function clearAll;
   Function insertCharacter;
   Function scrollToEnd;
   History({super.key, 
-  required this.history,
+  
   required this.scrollToEnd,
   required this.clearAll,
   required this.insertCharacter});
@@ -17,7 +17,23 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
-  
+  List<String> history = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    loadHistory();
+    super.initState();
+  }
+
+  void loadHistory() async
+  {
+    var pref = await SharedPreferences.getInstance();
+    setState(() {
+      history = pref.getStringList("history") ?? [];
+      
+    });
+  }
+
   void _clickHistory(String string)
   {
     widget.clearAll();
@@ -29,9 +45,9 @@ class _HistoryState extends State<History> {
   
   void _longpressHistory(int idx) async
   {
-    widget.history.removeAt(idx);
+    history.removeAt(idx);
     var pref = await SharedPreferences.getInstance();
-    pref.setStringList("history", widget.history);
+    pref.setStringList("history", history);
     setState(() {      
     });
   }
@@ -65,7 +81,7 @@ class _HistoryState extends State<History> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setStringList('history', []);
       setState(() {
-        widget.history = [];
+        history = [];
       });
       Navigator.of(context).pop(true);
     }
@@ -81,11 +97,11 @@ class _HistoryState extends State<History> {
             height: 250.0,
             child: ListView.separated(                
               separatorBuilder: (context, index) => Divider(height: 1, color: Color.fromARGB(115, 133, 132, 132),),
-              itemCount: widget.history.length,
+              itemCount: history.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(widget.history[index]),
-                  onTap: () => _clickHistory(widget.history[index]),
+                  title: Text(history[index]),
+                  onTap: () => _clickHistory(history[index]),
                   onLongPress: () => _longpressHistory(index),
                 );
               },
