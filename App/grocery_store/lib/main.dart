@@ -40,6 +40,7 @@ class _AppHomeState extends State<AppHome> {
 
     return Scaffold(   
       // appBar: AppBarCustom(key: widget.appBarKey),
+      backgroundColor: ThemeCustom.main_bgApp,
       bottomNavigationBar: BottomNav(index: widget.currentIndex, controller: widget._controller,callChild: widget.callChild, appBarKey:  widget.appBarKey,),
       body: Container(
         // color: ThemeCustom.main_bgApp,

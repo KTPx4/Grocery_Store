@@ -20,7 +20,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   String result = '';
-  List<String> history = [];
+  
   Color bgColor = Colors.grey;
   Color textColor = Colors.white;
 
@@ -29,22 +29,19 @@ class _CalculatorPageState extends State<CalculatorPage> {
   void initState() {
     
     super.initState();
-    _loadHistory();
+   
     bgColor = ThemeCustom.cal_bgButton;
     textColor = ThemeCustom.cal_textButton;
 
   }
 
-  void _loadHistory() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      history = prefs.getStringList('history') ?? [];
-    });
-  }
-
   void _saveHistory(String entry) async {
-    if(entry.split("=").length < 2) return;
+    var rs = entry.split("=");
+  
+    if(double.tryParse(rs[0]) != null || rs.length < 2 || rs[1].isEmpty || rs[1] == " " ) return;
+
     final prefs = await SharedPreferences.getInstance();
+    var history = prefs.getStringList("history") ?? [];
     history.add(entry);
     await prefs.setStringList('history', history);
   }
@@ -206,7 +203,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return History(history: history, scrollToEnd: _scrollToEnd, clearAll: _clearAll, insertCharacter: _insertCharacter);
+        return  History( scrollToEnd: _scrollToEnd, clearAll: _clearAll, insertCharacter: _insertCharacter);
       },
     );
   
@@ -221,7 +218,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
         backgroundColor: ThemeCustom.main_backgAppBar_v2,      
       ),
       body: Container(
-            // color: ThemeCustom.cal_bgListButton,
+            color: ThemeCustom.cal_bgListButton,
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 40),
             child: Column(            
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -229,7 +226,9 @@ class _CalculatorPageState extends State<CalculatorPage> {
                  IconButton(           
                 icon: Icon(Icons.history, size: 35,),
                 onPressed: _showHistory,
-              ),        
+              ),  
+
+                // input textbox   
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -254,7 +253,8 @@ class _CalculatorPageState extends State<CalculatorPage> {
                     ],
                   ),
                 ),
-      
+
+                // function row
                 const SizedBox(height: 8.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -265,6 +265,8 @@ class _CalculatorPageState extends State<CalculatorPage> {
                     IconButton(onPressed: _clearAll, icon: Icon(Icons.cleaning_services_rounded)),
                   ],
                 ),
+
+                // number row
                 const SizedBox(height: 8.0),
                 _buildButton( ['7', '8', '9', '/'] ),
                 const SizedBox(height: 8.0),
